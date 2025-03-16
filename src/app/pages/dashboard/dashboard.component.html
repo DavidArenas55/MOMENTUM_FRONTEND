@@ -1,0 +1,37 @@
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  <!-- No. Column -->
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef> No. </th>
+    <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+  </ng-container>
+
+  <!-- Name Column -->
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef> Name </th>
+    <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+  </ng-container>
+
+  <!-- Age Column -->
+  <ng-container matColumnDef="age">
+    <th mat-header-cell *matHeaderCellDef> Age </th>
+    <td mat-cell *matCellDef="let element"> {{element.age}} </td>
+  </ng-container>
+
+  <!-- Mail Column -->
+  <ng-container matColumnDef="mail">
+    <th mat-header-cell *matHeaderCellDef> Mail </th>
+    <td mat-cell *matCellDef="let element"> {{element.mail}} </td>
+  </ng-container>
+
+  <!-- isDeleted Column -->
+  <ng-container matColumnDef="isDeleted">
+    <th mat-header-cell *matHeaderCellDef> Is Deleted </th>
+    <td mat-cell *matCellDef="let element"> {{element.isDeleted}} </td>
+  </ng-container>
+
+  <!-- Header Row -->
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  
+  <!-- Data Row -->
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

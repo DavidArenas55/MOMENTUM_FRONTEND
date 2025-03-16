@@ -1,0 +1,8 @@
+<form [formGroup]="inicioForm">
+    <button mat-button [matMenuTriggerFor]="menu">Menu</button>
+    <mat-menu #menu="matMenu">
+        <button mat-menu-item [routerLink]="'/login'">Login</button>
+        <button mat-menu-item [routerLink]="'/register'">Register</button>
+        <button mat-menu-item [routerLink]="'/info'">Info</button>
+    </mat-menu>
+    </form>

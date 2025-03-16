@@ -26,34 +26,33 @@ import { MatButton } from '@angular/material/button';
     MatFormField,
     MatInput,
     MatLabel,
-    MatError,
-  ],
+    MatError],
 })
 export class LoginComponent {
   loginForm: FormGroup;
-  errorMessage: string = '';
   authService = inject(AuthService);
 
-  constructor(private formBuilder: FormBuilder, private router: Router) {
-    this.loginForm = this.formBuilder.group({
-      name_or_mail: ['', Validators.required],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+  constructor(private form: FormBuilder, private router: Router){
+    this.loginForm = this.form.group({
+      name_or_mail: ['Marcel', [Validators.required]],
+      password: ['123456', [Validators.required, Validators.minLength(6)]], 
     });
   }
 
   onSubmit() {
-    console.debug("aa")
     if (this.loginForm.valid) {
       this.authService.login(this.loginForm.value).subscribe({
         next: () => {
           console.log('Usuario autenticado');
-          this.router.navigate(['/dashboard']); // Redirigir después del login
+          this.router.navigate(['/dashboard']);
         },
         error: (err: any) => {
           console.error('Error en el inicio de sesión:', err);
-          this.errorMessage = err.error?.error || 'Error en el inicio de sesión';
         },
       });
+    }
+    else{
+      alert("input values");
     }
   }
 }
