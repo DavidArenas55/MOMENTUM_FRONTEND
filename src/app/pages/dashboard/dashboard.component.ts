@@ -3,6 +3,11 @@ import { AuthService } from '../../services/auth.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatIcon } from '@angular/material/icon';
+import { MatToolbar } from '@angular/material/toolbar';
+import { MatIconButton } from '@angular/material/button';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { CommonModule } from '@angular/common';
 
 export interface UsersFormat {
   name: string;
@@ -14,9 +19,17 @@ export interface UsersFormat {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [ReactiveFormsModule, MatTableModule ],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatTableModule,
+    MatIcon,
+    MatToolbar,
+    MatIconButton,
+    MatPaginator,
+  ],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css',
+  styleUrl: './dashboard.component.scss',
   standalone: true,
 })
 export class DashboardComponent {
@@ -30,9 +43,17 @@ export class DashboardComponent {
     this.dataSource = new MatTableDataSource();
   }
 
-  ngOnInit():void {
+  pageSize = 5;
+  page = 0;
+  length = 0;
+
+  ngOnInit(): void {
+    this.getPaginatedUsers();
+  }
+
+  getPaginatedUsers(): void {
     try{
-      this.authService.getUsers().subscribe({
+      this.authService.getUsers(this.page, this.pageSize).subscribe({
         next: (data: any) => {
           this.ElementData = data.users.map((user: any) => ({
             name: user.name,
@@ -43,6 +64,7 @@ export class DashboardComponent {
           }));
           console.log(this.ElementData);
           this.dataSource.data = this.ElementData;
+          this.length = data.totalUsers;
         },
         error: (error: any) => {
           console.error('Error fetching users:', error);
@@ -53,5 +75,11 @@ export class DashboardComponent {
     catch(e){
       console.error('Error obtaining users', e);
     }
+  }
+
+  handlePageChange(event: PageEvent) {
+    this.pageSize = event.pageSize;
+    this.page = event.pageIndex;
+    this.getPaginatedUsers();
   }
 }

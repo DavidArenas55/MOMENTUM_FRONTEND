@@ -13,7 +13,13 @@ export class AuthService {
   login(credentials: { name_or_mail: string; password: string }): Observable<any> {
     return this.http.post(this.apiUrl + "users/login", credentials);
   }
-  getUsers(): Observable<any> {
-    return this.http.get(this.apiUrl + "users");
+  getUsers(page: number, limit: number): Observable<any> {
+    return this.http.get(this.apiUrl + "users", {
+      params: {
+        getDeleted: true,
+        page: page,
+        limit: limit,
+      }
+    });
   }
 }
