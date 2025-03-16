@@ -22,4 +22,9 @@ export class AuthService {
       }
     });
   }
+  deleteUsers(usersMails: string[]): Observable<any> {
+    return this.http.patch(this.apiUrl +'users/soft', { usersMails }, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
 }

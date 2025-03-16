@@ -2,10 +2,23 @@
   <button mat-icon-button>
     <mat-icon>menu</mat-icon>
   </button>
+  <button mat-fab color="accent" (click)="deleteSelected()">
+    <mat-icon>delete</mat-icon>
+  </button>
 </mat-toolbar>
 
 <div id="content-div">
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" id="user-table">
+    <!-- Delete Column -->
+    <ng-container matColumnDef="delete">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox (change)="toggleSelectAll($event)" [checked]="isAllSelected()" [indeterminate]="isIndeterminate()"></mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let element">
+        <mat-checkbox [disabled]="element.isDeleted" (change)="toggleSelection(element, $event)" [checked]="isSelected(element)"></mat-checkbox>
+      </td>
+    </ng-container>
+
     <!-- No. Column -->
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef> ID </th>

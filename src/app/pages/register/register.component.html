@@ -46,14 +46,14 @@
                 </mat-form-field>
               </p>
               <p>
-                <mat-form-field appearance="outline" style="width: 100%" [ngClass]="{'error-border': formRegister.hasError('passwordMismatch') && formRegister.get('passwordVerification')?.touched}">
+                <mat-form-field appearance="outline" style="width: 100%">
                   <mat-label>Verifica contraseña</mat-label>
                   <input matInput formControlName="passwordVerification" type="password" required />
                   @if (formRegister.get('passwordVerification')?.hasError('required') && formRegister.get('passwordVerification')?.touched) {
                     <mat-error>Debes verificar la contraseña</mat-error>
                   }
                   @if (formRegister.get('passwordVerification')?.hasError('passwordMismatch') && formRegister.get('passwordVerification')?.touched) {
-                    <mat-error>Las contraseñas no coinciden</mat-error>
+                    <mat-error>Las contraseñas no coinciden!</mat-error>
                   }
                 </mat-form-field>
               </p>
