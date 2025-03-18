@@ -13,6 +13,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatListOption, MatSelectionList } from '@angular/material/list';
 import { CalendarsService } from '../../services/calendars.service';
 import { Calendar } from '../../models/calendar.model';
+import { NavbarComponent } from '../navbar/navbar.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -27,7 +28,8 @@ import { Calendar } from '../../models/calendar.model';
     MatIconButton,
     MatButton,
     MatPaginator,
-    MatCheckboxModule
+    NavbarComponent,
+    MatCheckboxModule,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',

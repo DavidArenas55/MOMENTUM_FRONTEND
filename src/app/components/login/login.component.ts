@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
@@ -32,6 +32,8 @@ export class LoginComponent {
   loginForm: FormGroup;
   authService = inject(AuthService);
 
+  @Output() loginSuccess = new EventEmitter<boolean>();
+
   constructor(private form: FormBuilder, private router: Router){
     this.loginForm = this.form.group({
       name_or_mail: ['Marcel', [Validators.required]],
@@ -44,6 +46,7 @@ export class LoginComponent {
       this.authService.login(this.loginForm.value).subscribe({
         next: () => {
           console.log('Usuario autenticado');
+          this.loginSuccess.emit(true);
           this.router.navigate(['/dashboard']);
         },
         error: (err: any) => {
