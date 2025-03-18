@@ -8,11 +8,28 @@
   ));
 }
 
-#content-div {
+.content-div {
   padding: 2rem;
+}
+
+.twocols {
+  display: flex;
+  gap: 2em;
+}
+.column {
+  flex-basis: 50%;
+  box-sizing: border-box;
+}
+
+.mat-mdc-row {
+  cursor:pointer;
 }
 
 .deleted-user {
   background-color: var(--mat-sys-error);
   color: var(--mat-sys-on-error);
+}
+
+.userinfo-key {
+  font-weight: bold;
 }

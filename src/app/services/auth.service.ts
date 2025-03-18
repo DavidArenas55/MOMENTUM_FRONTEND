@@ -6,15 +6,15 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/'; // URL de tu backend
+  public static apiUrl = 'http://localhost:8080/'; // URL de tu backend
 
   constructor(private http: HttpClient) {}
 
   login(credentials: { name_or_mail: string; password: string }): Observable<any> {
-    return this.http.post(this.apiUrl + "users/login", credentials);
+    return this.http.post(AuthService.apiUrl + "users/login", credentials);
   }
   getUsers(page: number, limit: number): Observable<any> {
-    return this.http.get(this.apiUrl + "users", {
+    return this.http.get(AuthService.apiUrl + "users", {
       params: {
         getDeleted: true,
         page: page,
@@ -22,8 +22,8 @@ export class AuthService {
       }
     });
   }
-  deleteUsers(usersIds: string[]): Observable<any> {
-    return this.http.patch(this.apiUrl +'users/soft', { usersIds }, {
+  deleteUsers(usersMails: string[]): Observable<any> {
+    return this.http.patch(AuthService.apiUrl +'users/soft', { usersMails }, {
       headers: { 'Content-Type': 'application/json' }
     });
   }

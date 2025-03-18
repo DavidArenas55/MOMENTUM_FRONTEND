@@ -7,7 +7,7 @@
   </button>
 </mat-toolbar>
 
-<div id="content-div">
+<div class="content-div" *ngIf="!editingUser">
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" id="user-table">
     <!-- Delete Column -->
     <ng-container matColumnDef="delete">
@@ -53,10 +53,30 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 
     <!-- Data Row -->
-    <tr mat-row *matRowDef="let row; columns: displayedColumns; let entry;" [ngClass]="{'deleted-user': entry.isDeleted}"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns; let entry;" (click)="editUser(entry)" [ngClass]="{'deleted-user': entry.isDeleted}"></tr>
   </table>
 
   <mat-paginator [pageSizeOptions]="[1, 5, 10, 20, 50]" [pageSize]="pageSize" [pageIndex]="page" (page)="handlePageChange($event)" [length]="length"></mat-paginator>
+</div>
+
+<div class="content-div twocols" *ngIf="editingUser">
+    <div class="column">
+      <button mat-stroked-button (click)="this.editingUser = null">Go back</button>
+      <h2>User info:</h2>
+      <p><span class="userinfo-key">User ID:</span> {{editingUser._id}}</p>
+      <p><span class="userinfo-key">Username:</span> {{editingUser.name}}</p>
+      <p><span class="userinfo-key">Email:</span> {{editingUser.mail}}</p>
+      <p><span class="userinfo-key">Age:</span> {{editingUser.age}}</p>
+      <p><span class="userinfo-key">Deleted:</span> {{editingUser.isDeleted ? 'Yes' : 'No'}}</p>
+    </div>
+    <div class="column">
+      <h2>User calendars:</h2>
+      <mat-selection-list>
+        <mat-list-option *ngFor="let calendar of userCalendars" #calendarList>
+          {{ calendar.calendarName }} ({{calendar.appointments.length}} appointments)
+        </mat-list-option>
+      </mat-selection-list>
+    </div>
 </div>
 
 

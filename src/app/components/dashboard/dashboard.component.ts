@@ -5,21 +5,27 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { Router } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 import { MatToolbar } from '@angular/material/toolbar';
-import { MatIconButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { CommonModule } from '@angular/common';
 import { User } from '../../models/user.model';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatListOption, MatSelectionList } from '@angular/material/list';
+import { CalendarsService } from '../../services/calendars.service';
+import { Calendar } from '../../models/calendar.model';
 
 @Component({
   selector: 'app-dashboard',
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    MatListOption,
+    MatSelectionList,
     MatTableModule,
     MatIcon,
     MatToolbar,
     MatIconButton,
+    MatButton,
     MatPaginator,
     MatCheckboxModule
   ],
@@ -30,6 +36,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 export class DashboardComponent {
   selectedUsers = new Set<Partial<User>>();
   authService = inject(AuthService);
+  calendarService = inject(CalendarsService);
   dashboardForm: FormGroup;
   ElementData: User[] = [];
   displayedColumns: string[] = ['delete','name', '_id', 'age', 'mail', 'isDeleted'];
@@ -42,6 +49,9 @@ export class DashboardComponent {
   pageSize = 5;
   page = 0;
   length = 0;
+
+  editingUser: User | null = null;
+  userCalendars: Calendar[] = [];
 
   ngOnInit(): void {
     this.getPaginatedUsers();
@@ -70,7 +80,7 @@ export class DashboardComponent {
     } catch (e) {
       console.error('Error obtaining users', e);
     }
-  }  
+  }
 
   handlePageChange(event: PageEvent) {
     this.pageSize = event.pageSize;
@@ -120,5 +130,14 @@ export class DashboardComponent {
         console.error('Error en el inicio de sesión:', err);
       },
     });
+  }
+
+  editUser(user: User) {
+    this.editingUser = user;
+    this.calendarService.getCalendars(user._id!).subscribe({
+      next: (calendars) => {
+        this.userCalendars = calendars.calendars;
+      },
+    })
   }
 }
