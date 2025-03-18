@@ -22,8 +22,8 @@ export class AuthService {
       }
     });
   }
-  deleteUsers(usersMails: string[]): Observable<any> {
-    return this.http.patch(this.apiUrl +'users/soft', { usersMails }, {
+  deleteUsers(usersIds: string[]): Observable<any> {
+    return this.http.patch(this.apiUrl +'users/soft', { usersIds }, {
       headers: { 'Content-Type': 'application/json' }
     });
   }

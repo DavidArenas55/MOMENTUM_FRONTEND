@@ -7,7 +7,7 @@
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <p>
           <mat-form-field appearance="outline" style="width: 100%">
-            <mat-label for="name_or_mail">Nombre</mat-label>
+            <mat-label for="name_or_mail">Nombre o correo</mat-label>
             <input matInput id="name_or_mail" formControlName="name_or_mail" type="text" required />
             @if (loginForm.get('name_or_mail')?.invalid && loginForm.get('name_or_mail')?.touched) {
               <mat-error>El nombre es obligatorio</mat-error>

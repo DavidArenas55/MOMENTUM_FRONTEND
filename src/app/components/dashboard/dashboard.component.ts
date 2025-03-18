@@ -11,14 +11,6 @@ import { CommonModule } from '@angular/common';
 import { User } from '../../models/user.model';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 
-export interface UsersFormat {
-  name: string;
-  id: string;
-  age: number;
-  mail: string;
-  isDeleted: boolean;
-}
-
 @Component({
   selector: 'app-dashboard',
   imports: [
@@ -39,9 +31,9 @@ export class DashboardComponent {
   selectedUsers = new Set<Partial<User>>();
   authService = inject(AuthService);
   dashboardForm: FormGroup;
-  ElementData: UsersFormat[] = [];
-  displayedColumns: string[] = ['delete','name', 'id', 'age', 'mail', 'isDeleted'];
-  dataSource: MatTableDataSource<UsersFormat>;
+  ElementData: User[] = [];
+  displayedColumns: string[] = ['delete','name', '_id', 'age', 'mail', 'isDeleted'];
+  dataSource: MatTableDataSource<User>;
   constructor(private form: FormBuilder, private router: Router){
     this.dashboardForm = this.form.group({});
     this.dataSource = new MatTableDataSource();
@@ -56,12 +48,12 @@ export class DashboardComponent {
   }
 
   getPaginatedUsers(): void {
-    try{
+    try {
       this.authService.getUsers(this.page, this.pageSize).subscribe({
         next: (data: any) => {
           this.ElementData = data.users.map((user: any) => ({
             name: user.name,
-            id: user._id,
+            _id: user._id, // Keep the same naming as your model
             age: user.age,
             mail: user.mail,
             isDeleted: user.isDeleted
@@ -72,14 +64,13 @@ export class DashboardComponent {
         },
         error: (error: any) => {
           console.error('Error fetching users:', error);
-          alert("Error fetching users");
+          alert('Error fetching users');
         }
       });
-    }
-    catch(e){
+    } catch (e) {
       console.error('Error obtaining users', e);
     }
-  }
+  }  
 
   handlePageChange(event: PageEvent) {
     this.pageSize = event.pageSize;
@@ -117,9 +108,10 @@ export class DashboardComponent {
   }
 
   deleteSelected() {
-    const selectedUsersMail: string[] = Array.from(this.selectedUsers).map(user => user.mail).filter((mail): mail is string => mail !== undefined);
-    console.log(selectedUsersMail);
-    this.authService.deleteUsers(selectedUsersMail).subscribe({
+    const selectedUsersId: string[] = Array.from(this.selectedUsers)
+    .map(user => user._id)
+    .filter((id): id is string => id !== undefined);
+    this.authService.deleteUsers(selectedUsersId).subscribe({
       next: () => {
         this.selectedUsers.clear();
         this.getPaginatedUsers();
