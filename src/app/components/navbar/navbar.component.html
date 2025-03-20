@@ -1,15 +1,14 @@
-<mat-toolbar color="primary">
+<mat-toolbar color="primary" id="navbar">
     <button mat-icon-button (click)="router.navigate(['/dashboard'])">
       <mat-icon>person</mat-icon>
     </button>
     <button mat-icon-button (click)="router.navigate(['/calendar'])">
       <mat-icon>event</mat-icon>
     </button>
-  
+
     <span class="spacer"></span>
-  
+
     <button mat-icon-button (click)="logout()">
       <mat-icon>logout</mat-icon>
     </button>
   </mat-toolbar>
-  

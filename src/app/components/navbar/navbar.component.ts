@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
-import { RouterModule, Router } from '@angular/router';
-import { MatButton,  } from '@angular/material/button';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatToolbarModule } from '@angular/material/toolbar'; 
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 @Component({
   selector: 'app-navbar',
@@ -16,7 +15,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   ],
   standalone: true,
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.css'
+  styleUrl: './navbar.component.scss'
 })
 export class NavbarComponent {
   isLoggedIn = true;

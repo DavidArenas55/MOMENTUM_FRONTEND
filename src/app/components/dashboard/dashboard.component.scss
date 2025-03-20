@@ -1,11 +1,16 @@
 @use '@angular/material' as mat;
 
-// Customize the entire app. Change :root to your selector if you want to scope the styles.
 #main-toolbar {
   @include mat.toolbar-overrides((
     container-background-color: var(--mat-sys-secondary-container),
     container-text-color: var(--mat-sys-on-secondary-container)
   ));
+}
+
+#delete-users-btn {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
 }
 
 .content-div {

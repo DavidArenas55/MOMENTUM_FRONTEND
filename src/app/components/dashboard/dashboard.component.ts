@@ -5,7 +5,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { Router } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 import { MatToolbar } from '@angular/material/toolbar';
-import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatButton, MatFabButton, MatIconButton } from '@angular/material/button';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { CommonModule } from '@angular/common';
 import { User } from '../../models/user.model';
@@ -24,8 +24,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
     MatSelectionList,
     MatTableModule,
     MatIcon,
-    MatToolbar,
-    MatIconButton,
+    MatFabButton,
     MatButton,
     MatPaginator,
     NavbarComponent,

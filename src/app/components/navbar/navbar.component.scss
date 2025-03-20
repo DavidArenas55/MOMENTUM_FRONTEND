@@ -1,0 +1,12 @@
+@use '@angular/material' as mat;
+
+#navbar {
+  @include mat.toolbar-overrides((
+    container-background-color: var(--mat-sys-secondary-container),
+    container-text-color: var(--mat-sys-on-secondary-container)
+  ));
+}
+
+.spacer {
+    flex: 1 1 auto;
+  }
