@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { User } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -26,5 +27,15 @@ export class AuthService {
     return this.http.patch(AuthService.apiUrl +'users/soft', { usersIds }, {
       headers: { 'Content-Type': 'application/json' }
     });
+  }
+
+  userUpdate(userId: string, userData: Partial<{ mail: string; password: string }>): Observable<User> {
+    return this.http.put<User>(AuthService.apiUrl + `users/${userId}`, userData, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  getUserById(userId: string) {
+    return this.http.get<User>(`http://localhost:8080/api/users/${userId}`);
   }
 }

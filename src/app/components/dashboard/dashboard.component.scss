@@ -38,3 +38,18 @@
 .userinfo-key {
   font-weight: bold;
 }
+
+.edit-user-form {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: var(--mat-sys-primary-container);
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+

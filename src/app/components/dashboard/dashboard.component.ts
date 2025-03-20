@@ -19,7 +19,7 @@ import { Calendar } from '../../models/calendar.model';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { MatInput } from '@angular/material/input';
-
+import { FormsModule } from '@angular/forms';  // <-- Agrega esta línea
 
 @Component({
   selector: 'app-dashboard',
@@ -39,8 +39,7 @@ import { MatInput } from '@angular/material/input';
     NavbarComponent,
     MatCheckboxModule,
     MatInput,
-    
-
+    FormsModule,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -54,11 +53,11 @@ export class DashboardComponent {
   ElementData: User[] = [];
   displayedColumns: string[] = ['delete','name', '_id', 'age', 'mail', 'isDeleted'];
   dataSource: MatTableDataSource<User>;
-
   calendarForm: FormGroup;
   isCalendarFormOpen = false;
   editingCalendar: Calendar | null = null;
-  editingUser: User | null = null;
+  //editingUser: User | null = null;
+  editingUser: Partial<User> | null = null;
   userCalendars: Calendar[] = [];
 
   constructor(private form: FormBuilder, private router: Router){
@@ -73,11 +72,9 @@ export class DashboardComponent {
       isDeleted: [false]
     });
   }
-
   pageSize = 5;
   page = 0;
   length = 0;
-
   ngOnInit(): void {
     this.getPaginatedUsers();
   }
@@ -91,7 +88,8 @@ export class DashboardComponent {
             _id: user._id, // Keep the same naming as your model
             age: user.age,
             mail: user.mail,
-            isDeleted: user.isDeleted
+            isDeleted: user.isDeleted,
+            password: user.password,
           }));
           console.log(this.ElementData);
           this.dataSource.data = this.ElementData;
@@ -192,7 +190,9 @@ export class DashboardComponent {
     alert(calendarData);
     this.calendarService.createCalendar(calendarData).subscribe({
       next: () => {
-        if (this.editingUser) this.getUserCalendars(this.editingUser);
+        if (this.editingUser && this.editingUser._id && this.editingUser.name) {
+          this.getUserCalendars(this.editingUser as User);
+        }
         this.closeCalendarForm();
       },
       error: (err: any) => console.error('Error creating calendar:', err),
@@ -206,9 +206,12 @@ export class DashboardComponent {
   }
 
   deleteCalendar(calendarId: string): void {
+
     this.calendarService.deleteCalendar(calendarId).subscribe({
       next: () => {
-        if (this.editingUser) this.getUserCalendars(this.editingUser);
+        if (this.editingUser && this.editingUser._id && this.editingUser.name) {
+          this.getUserCalendars(this.editingUser as User);
+        }
       },
       error: (err) => console.error('Error deleting calendar:', err),
     });
@@ -236,4 +239,32 @@ export class DashboardComponent {
     });
   }
 
+  selectUser(user: User) {
+    this.editingUser = { ...user }; // Copia los datos para edición
+  }
+
+  cancelEditing() {
+    this.editingUser = null; // Oculta el formulario de edición
+  }
+
+  saveUser() {
+    if (!this.editingUser || !this.editingUser._id) return;
+
+    const updatedData: Partial<User> = { 
+      ...this.editingUser  // Copia todos los datos editados
+    };
+
+    this.authService.userUpdate(this.editingUser._id, updatedData).subscribe({
+      next: (updatedUser) => {
+        console.log('User updated:', updatedUser);
+        this.editingUser = null; // Salir del modo edición después de actualizar
+      },
+      error: (error) => console.error('Error updating user:', error),
+    });
+  }
+
+  cancelEdit() {
+    this.editingUser = null; // Salir del modo edición sin guardar cambios
+  }
 }
+
