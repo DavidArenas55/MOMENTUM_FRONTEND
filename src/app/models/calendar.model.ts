@@ -2,8 +2,9 @@ export interface Calendar {
   _id: string,
   owner: string,
   calendarName: string,
-  appointments: string[],
-  invitees: string[],
+  appointments: [],
+  invitees: [],
+  isDeleted?: boolean;
 }
 
 export interface CalendarMessage {

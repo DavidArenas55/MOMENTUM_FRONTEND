@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject  } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -10,18 +10,27 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { CommonModule } from '@angular/common';
 import { User } from '../../models/user.model';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatListOption, MatSelectionList } from '@angular/material/list';
+import { MatListOption, MatSelectionList, MatListModule  } from '@angular/material/list';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { CalendarsService } from '../../services/calendars.service';
 import { Calendar } from '../../models/calendar.model';
 import { NavbarComponent } from '../navbar/navbar.component';
+import { BrowserModule } from '@angular/platform-browser';
+import { MatInput } from '@angular/material/input';
+
 
 @Component({
   selector: 'app-dashboard',
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    MatFormFieldModule,
+    MatDialogModule,
     MatListOption,
-    MatSelectionList,
+    MatListModule,
+    MatChipsModule,
     MatTableModule,
     MatIcon,
     MatFabButton,
@@ -29,6 +38,9 @@ import { NavbarComponent } from '../navbar/navbar.component';
     MatPaginator,
     NavbarComponent,
     MatCheckboxModule,
+    MatInput,
+    
+
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -42,17 +54,29 @@ export class DashboardComponent {
   ElementData: User[] = [];
   displayedColumns: string[] = ['delete','name', '_id', 'age', 'mail', 'isDeleted'];
   dataSource: MatTableDataSource<User>;
+
+  calendarForm: FormGroup;
+  isCalendarFormOpen = false;
+  editingCalendar: Calendar | null = null;
+  editingUser: User | null = null;
+  userCalendars: Calendar[] = [];
+
   constructor(private form: FormBuilder, private router: Router){
     this.dashboardForm = this.form.group({});
     this.dataSource = new MatTableDataSource();
+    this.calendarForm = this.form.group({
+      calendarName: ['', [Validators.required, Validators.minLength(3)]],
+      owner: ['', Validators.required],
+      Calendar_ID: [''],
+      appointments: [[]],
+      invitees: [[]],
+      isDeleted: [false]
+    });
   }
 
   pageSize = 5;
   page = 0;
   length = 0;
-
-  editingUser: User | null = null;
-  userCalendars: Calendar[] = [];
 
   ngOnInit(): void {
     this.getPaginatedUsers();
@@ -141,4 +165,75 @@ export class DashboardComponent {
       },
     })
   }
+  getUserCalendars(user: User): void {
+    this.calendarService.getCalendars(user._id!).subscribe({
+      next: (calendars) => this.userCalendars = calendars.calendars,
+      error: (err) => console.error('Error fetching calendars:', err),
+    });
+  }
+  openCalendarForm(): void {
+    this.editingCalendar = null;
+    this.calendarForm.reset();
+    this.isCalendarFormOpen = true;
+  }
+
+  editCalendar(calendar: Calendar): void {
+    this.editingCalendar = calendar;
+    this.calendarForm.patchValue(calendar);
+    this.isCalendarFormOpen = true;
+  }
+
+  saveCalendar(): void {
+    if (this.calendarForm.invalid) {
+      return;
+    }
+  const calendarData: Partial<Calendar> = this.calendarForm.value;
+    // Crear nuevo calendario
+    alert(calendarData);
+    this.calendarService.createCalendar(calendarData).subscribe({
+      next: () => {
+        if (this.editingUser) this.getUserCalendars(this.editingUser);
+        this.closeCalendarForm();
+      },
+      error: (err: any) => console.error('Error creating calendar:', err),
+    });
+  }
+
+
+  closeCalendarForm(): void {
+    this.isCalendarFormOpen = false;
+    this.calendarForm.reset();
+  }
+
+  deleteCalendar(calendarId: string): void {
+    this.calendarService.deleteCalendar(calendarId).subscribe({
+      next: () => {
+        if (this.editingUser) this.getUserCalendars(this.editingUser);
+      },
+      error: (err) => console.error('Error deleting calendar:', err),
+    });
+  }
+
+  addAppointment(appointment: string): void {
+    const currentAppointments = this.calendarForm.value.appointments;
+    this.calendarForm.patchValue({ appointments: [...currentAppointments, appointment] });
+  }
+
+  removeAppointment(appointment: string): void {
+    this.calendarForm.patchValue({
+      appointments: this.calendarForm.value.appointments.filter((a: string) => a !== appointment),
+    });
+  }
+
+  addInvitee(invitee: string): void {
+    const currentInvitees = this.calendarForm.value.invitees;
+    this.calendarForm.patchValue({ invitees: [...currentInvitees, invitee] });
+  }
+
+  removeInvitee(invitee: string): void {
+    this.calendarForm.patchValue({
+      invitees: this.calendarForm.value.invitees.filter((i: string) => i !== invitee),
+    });
+  }
+
 }
