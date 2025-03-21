@@ -29,6 +29,12 @@ export class AuthService {
     });
   }
 
+  restoreUser(userId: string): Observable<any> {
+    return this.http.patch(AuthService.apiUrl +`users/${userId}/restore`,{}, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
   userUpdate(userId: string, userData: Partial<{ mail: string; password: string }>): Observable<User> {
     return this.http.put<User>(AuthService.apiUrl + `users/${userId}`, userData, {
       headers: { 'Content-Type': 'application/json' }

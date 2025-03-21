@@ -1,0 +1,35 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-register-card {
+  width: 400px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.register-link a {
+  text-decoration: none;
+  color: #3f51b5;
+}
+
+.register-link a:hover {
+  text-decoration: underline; 
+  opacity: 0.8;
+}
+
+.mat-icon {
+  vertical-align: middle;
+  margin-right: 8px;
+}

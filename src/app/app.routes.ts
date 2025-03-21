@@ -1,14 +1,28 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './components/login/login.component';
-import { RegisterComponent } from './components/register/register.component';
-import { InicioComponent } from './components/inicio/inicio.component';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { CalendarDashboardComponent } from './components/calendar-dashboard/calendar-dashboard.component';
+import { LoginComponent } from './pages/login/login.component';
+import { InicioComponent } from './shared/inicio/inicio.component';
+import { AuthLayoutComponent } from './layout/auth-layout/auth-layout.component';
+import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
+import { RegisterComponent } from './pages/register/register.component';
+import { DashboardUsersComponent } from './pages/dashboard-users/dashboard-users.component';
+import { DashboardAppointmentsComponent } from './pages/dashboard-appointments/dashboard-appointments.component';
 
 export const routes: Routes = [
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'calendar', component: CalendarDashboardComponent },
-  { path: '', component: InicioComponent },
+  {
+    path: 'auth',
+    component: AuthLayoutComponent,
+    children: [
+      { path: 'login', component: LoginComponent },
+      { path: 'register', component: RegisterComponent }
+    ]
+  },
+  {
+    path: 'dashboard',
+    component: MainLayoutComponent,
+    children: [
+      { path: 'users', component: DashboardUsersComponent },
+      { path: 'appointments', component: DashboardAppointmentsComponent }
+    ]
+  },
+  { path: '', redirectTo: '/auth/login', pathMatch: 'full' }
 ];
