@@ -20,6 +20,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { MatInput } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { ConfirmationDialogComponent } from '../../shared/confirmation-dialog/confirmation-dialog.component';
+import { UP_ARROW } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-dashboard-users',
@@ -55,8 +56,8 @@ export class DashboardUsersComponent {
   calendarForm: FormGroup;
   isCalendarFormOpen = false;
   editingCalendar: Calendar | null = null;
-  //editingUser: User | null = null;
   editingUser: Partial<User> | null = null;
+  originalUser: Partial<User> | null = null;
   userCalendars: Calendar[] = [];
 
   constructor(private form: FormBuilder, private router: Router, private dialog: MatDialog){
@@ -80,11 +81,12 @@ export class DashboardUsersComponent {
 
   getPaginatedUsers(): void {
     try {
+      this.dataSource.data = [];
       this.authService.getUsers(this.page, this.pageSize).subscribe({
         next: (data: any) => {
           this.ElementData = data.users.map((user: any) => ({
             name: user.name,
-            _id: user._id, // Keep the same naming as your model
+            _id: user._id,
             age: user.age,
             mail: user.mail,
             isDeleted: user.isDeleted,
@@ -183,7 +185,8 @@ export class DashboardUsersComponent {
   }
 
   editUser(user: User) {
-    this.editingUser = user;
+    this.editingUser = JSON.parse(JSON.stringify(user));
+    this.originalUser = JSON.parse(JSON.stringify(user));
     this.calendarService.getCalendars(user._id!).subscribe({
       next: (calendars) => {
         this.userCalendars = calendars.calendars;
@@ -212,15 +215,17 @@ export class DashboardUsersComponent {
     if (this.calendarForm.invalid) {
       return;
     }
-  const calendarData: Partial<Calendar> = this.calendarForm.value;
+    const calendarData: Partial<Calendar> = this.calendarForm.value;
+    this.calendarForm.patchValue({
+      owner: "",
+      calendarName: ""
+    });
     // Crear nuevo calendario
-    alert(calendarData);
     this.calendarService.createCalendar(calendarData).subscribe({
       next: () => {
         if (this.editingUser && this.editingUser._id && this.editingUser.name) {
           this.getUserCalendars(this.editingUser as User);
         }
-        this.closeCalendarForm();
       },
       error: (err: any) => console.error('Error creating calendar:', err),
     });
@@ -229,7 +234,10 @@ export class DashboardUsersComponent {
 
   closeCalendarForm(): void {
     this.isCalendarFormOpen = false;
-    this.calendarForm.reset();
+    this.calendarForm.patchValue({
+      owner: "",
+      calendarName: ""
+    });
   }
 
   deleteCalendar(calendarId: string): void {
@@ -267,31 +275,27 @@ export class DashboardUsersComponent {
   }
 
   selectUser(user: User) {
-    this.editingUser = { ...user }; // Copia los datos para edición
+    this.editingUser = JSON.parse(JSON.stringify(user));
+    this.originalUser = JSON.parse(JSON.stringify(user));
   }
 
   cancelEditing() {
-    this.editingUser = null; // Oculta el formulario de edición
+    this.editingUser =  JSON.parse(JSON.stringify(this.originalUser));
   }
 
   saveUser() {
     if (!this.editingUser || !this.editingUser._id) return;
 
-    const updatedData: Partial<User> = { 
-      ...this.editingUser  // Copia todos los datos editados
-    };
-
+    const updatedData: Partial<User> = JSON.parse(JSON.stringify(this.editingUser));  
+    console.log('Updated data:', updatedData);
     this.authService.userUpdate(this.editingUser._id, updatedData).subscribe({
       next: (updatedUser) => {
         console.log('User updated:', updatedUser);
         this.editingUser = null; // Salir del modo edición después de actualizar
+        this.getPaginatedUsers();
       },
       error: (error) => console.error('Error updating user:', error),
     });
-  }
-
-  cancelEdit() {
-    this.editingUser = null; // Salir del modo edición sin guardar cambios
   }
 }
 
