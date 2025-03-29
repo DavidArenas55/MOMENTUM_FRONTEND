@@ -23,4 +23,11 @@ export class CalendarsService {
       {}
     );
   }
+
+  editCalendar(calendarId: string, changes: Partial<Calendar>): Observable<Calendar> {
+    return this.http.patch<Calendar>(
+      AuthService.apiUrl + "calendars/" + calendarId,
+      changes,
+    );
+  }
 }

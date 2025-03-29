@@ -42,7 +42,7 @@
         <!-- Restore button for deleted users -->
         <button *ngIf="element.isDeleted" mat-raised-button color="primary" (click)="restoreUser(element)">
           Restore
-        </button>       
+        </button>
       </td>
     </ng-container>
 
@@ -70,11 +70,11 @@
     <p><span class="userinfo-key">Email:</span> {{originalUser.mail}}</p>
     <p><span class="userinfo-key">Age:</span> {{originalUser.age}}</p>
     <p><span class="userinfo-key">Deleted:</span> {{originalUser.isDeleted ? 'Yes' : 'No'}}</p>
- 
+
     <!-- Formulario de edición -->
-    <div *ngIf="editingUser" class="edit-user-form">  
+    <div *ngIf="editingUser" class="edit-user-form">
       <h3>Edit User</h3>
-  
+
       <div class="form-group">
         <label>Name:</label>
         <input type="name" [(ngModel)]="editingUser.name" class="form-control" />
@@ -94,7 +94,7 @@
         <label>Password:</label>
         <input type="password" [(ngModel)]="editingUser.password" class="form-control" />
       </div>
-      
+
       <div class="edit-buttons">
         <button mat-raised-button color="primary" (click)="saveUser()">Save</button>
         <button mat-raised-button color="warn" (click)="cancelEditing()">Cancel</button>
@@ -104,35 +104,29 @@
 
   <div class="column">
     <h2>User calendars:</h2>
-    <mat-selection-list>
-      <mat-list-option *ngFor="let calendar of userCalendars" #calendarList>
+    <mat-list>
+      <mat-list-item *ngFor="let calendar of userCalendars" #calendarList>
         <div class="calendar-item">
           <span>{{ calendar.calendarName }} ({{ calendar.appointments.length }} appointments)</span>
-          <button mat-icon-button color="accent" (click)="openCalendarForm()">
+          <button mat-icon-button color="accent" (click)="editCalendar(calendar)" style="margin-right: 4px">
             <mat-icon>edit</mat-icon>
           </button>
           <button mat-icon-button color="warn" (click)="deleteCalendar(calendar._id)">
             <mat-icon>delete</mat-icon>
           </button>
         </div>
-      </mat-list-option>
-    </mat-selection-list>
+      </mat-list-item>
+    </mat-list>
   </div>
 
   <div class="column">
     <h2>{{ editingCalendar ? 'Edit Calendar' : 'Create Calendar' }}</h2>
     <form [formGroup]="calendarForm" (ngSubmit)="saveCalendar()">
-      
+
 
       <mat-form-field>
         <mat-label>Calendar Name</mat-label>
         <input matInput formControlName="calendarName" />
-      </mat-form-field>
-
-
-      <mat-form-field>
-        <mat-label>Owner</mat-label>
-        <input matInput formControlName="owner" />
       </mat-form-field>
 
       <div class="buttons">

@@ -10,7 +10,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { CommonModule } from '@angular/common';
 import { User } from '../../models/user.model';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatListOption, MatSelectionList, MatListModule  } from '@angular/material/list';
+import { MatListOption, MatList, MatListModule  } from '@angular/material/list';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -29,7 +29,7 @@ import { UP_ARROW } from '@angular/cdk/keycodes';
     ReactiveFormsModule,
     MatFormFieldModule,
     MatDialogModule,
-    MatListOption,
+    MatList,
     MatListModule,
     MatChipsModule,
     MatTableModule,
@@ -65,7 +65,7 @@ export class DashboardUsersComponent {
     this.dataSource = new MatTableDataSource();
     this.calendarForm = this.form.group({
       calendarName: ['', [Validators.required, Validators.minLength(3)]],
-      owner: ['', Validators.required],
+      owner: [''],
       Calendar_ID: [''],
       appointments: [[]],
       invitees: [[]],
@@ -108,7 +108,7 @@ export class DashboardUsersComponent {
 
   openConfirmationDialog(action: string) {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent);
-  
+
     return dialogRef.afterClosed();
   }
 
@@ -152,7 +152,7 @@ export class DashboardUsersComponent {
         const selectedUsersId: string[] = Array.from(this.selectedUsers)
           .map(user => user._id)
           .filter((id): id is string => id !== undefined);
-  
+
         this.authService.deleteUsers(selectedUsersId).subscribe({
           next: () => {
             this.selectedUsers.clear();
@@ -199,11 +199,6 @@ export class DashboardUsersComponent {
       error: (err) => console.error('Error fetching calendars:', err),
     });
   }
-  openCalendarForm(): void {
-    this.editingCalendar = null;
-    this.calendarForm.reset();
-    this.isCalendarFormOpen = true;
-  }
 
   editCalendar(calendar: Calendar): void {
     this.editingCalendar = calendar;
@@ -215,27 +210,47 @@ export class DashboardUsersComponent {
     if (this.calendarForm.invalid) {
       return;
     }
-    const calendarData: Partial<Calendar> = this.calendarForm.value;
+
+    if(this.editingCalendar){
+      // editing existing calendar
+      console.debug(this.editingCalendar);
+      console.debug(this.calendarForm.value);
+      this.calendarService.editCalendar(this.editingCalendar._id, {calendarName: this.calendarForm.value.calendarName}).subscribe({
+        next: () => {
+          if (this.editingUser && this.editingUser._id && this.editingUser.name) {
+            this.getUserCalendars(this.editingUser as User);
+          }
+        },
+        error: (err: any) => console.error('Error editing calendar:', err),
+      })
+    }else{
+      // creating new calendar
+      const calendarData: Partial<Calendar> = {
+        ...this.calendarForm.value,
+        owner: this.editingUser?._id,
+      }
+      this.calendarService.createCalendar(calendarData).subscribe({
+        next: () => {
+          if (this.editingUser && this.editingUser._id && this.editingUser.name) {
+            this.getUserCalendars(this.editingUser as User);
+          }
+        },
+        error: (err: any) => console.error('Error creating calendar:', err),
+      });
+    }
+
+
     this.calendarForm.patchValue({
-      owner: "",
       calendarName: ""
     });
-    // Crear nuevo calendario
-    this.calendarService.createCalendar(calendarData).subscribe({
-      next: () => {
-        if (this.editingUser && this.editingUser._id && this.editingUser.name) {
-          this.getUserCalendars(this.editingUser as User);
-        }
-      },
-      error: (err: any) => console.error('Error creating calendar:', err),
-    });
+    this.closeCalendarForm();
   }
 
 
   closeCalendarForm(): void {
+    this.editingCalendar = null;
     this.isCalendarFormOpen = false;
     this.calendarForm.patchValue({
-      owner: "",
       calendarName: ""
     });
   }
@@ -286,7 +301,7 @@ export class DashboardUsersComponent {
   saveUser() {
     if (!this.editingUser || !this.editingUser._id) return;
 
-    const updatedData: Partial<User> = JSON.parse(JSON.stringify(this.editingUser));  
+    const updatedData: Partial<User> = JSON.parse(JSON.stringify(this.editingUser));
     console.log('Updated data:', updatedData);
     this.authService.userUpdate(this.editingUser._id, updatedData).subscribe({
       next: (updatedUser) => {
