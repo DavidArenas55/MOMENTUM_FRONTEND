@@ -123,12 +123,40 @@
     <h2>{{ editingCalendar ? 'Edit Calendar' : 'Create Calendar' }}</h2>
     <form [formGroup]="calendarForm" (ngSubmit)="saveCalendar()">
 
-
       <mat-form-field>
         <mat-label>Calendar Name</mat-label>
         <input matInput formControlName="calendarName" />
       </mat-form-field>
-
+<!--
+      <mat-form-field>
+        <mat-label>Appointments</mat-label>
+        <mat-select formControlName="appointments" multiple>
+          <mat-option *ngFor="let appointment of availableAppointments" [value]="appointment">
+            {{ appointment }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+      <mat-form-field>
+        <mat-label>New Appointment</mat-label>
+        <input matInput formControlName ="newAppointment" (keyup.enter)="addAppointment()" placeholder="Type and press Enter">
+      </mat-form-field>
+      
+      <mat-chip-listbox>
+        <mat-chip *ngFor="let appointment of calendarForm.get('appointments')?.value" [removable]="true" (removed)="removeAppointment(appointment)">
+          {{ appointment }}
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+      </mat-chip-listbox>
+-->
+      <mat-form-field>
+        <mat-label>Invitees</mat-label>
+        <mat-select formControlName="invitees" multiple>
+          <mat-option *ngFor="let user of ElementData" [value]="user._id">
+            {{ user.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
       <div class="buttons">
         <button mat-button type="button" (click)="closeCalendarForm()">Cancel</button>
         <button mat-raised-button color="primary" type="submit">Save</button>

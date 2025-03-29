@@ -21,6 +21,7 @@ import { MatInput } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { ConfirmationDialogComponent } from '../../shared/confirmation-dialog/confirmation-dialog.component';
 import { UP_ARROW } from '@angular/cdk/keycodes';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-dashboard-users',
@@ -40,6 +41,7 @@ import { UP_ARROW } from '@angular/cdk/keycodes';
     MatCheckboxModule,
     MatInput,
     FormsModule,
+    MatSelectModule,
   ],
   templateUrl: './dashboard-users.component.html',
   styleUrl: './dashboard-users.component.scss',
@@ -59,6 +61,8 @@ export class DashboardUsersComponent {
   editingUser: Partial<User> | null = null;
   originalUser: Partial<User> | null = null;
   userCalendars: Calendar[] = [];
+  availableAppointments: string[] = [];
+  newAppointment: string = '';
 
   constructor(private form: FormBuilder, private router: Router, private dialog: MatDialog){
     this.dashboardForm = this.form.group({});
@@ -69,6 +73,7 @@ export class DashboardUsersComponent {
       Calendar_ID: [''],
       appointments: [[]],
       invitees: [[]],
+      newAppointment: [''],
       isDeleted: [false]
     });
   }
@@ -210,41 +215,41 @@ export class DashboardUsersComponent {
     if (this.calendarForm.invalid) {
       return;
     }
-
-    if(this.editingCalendar){
-      // editing existing calendar
-      console.debug(this.editingCalendar);
-      console.debug(this.calendarForm.value);
-      this.calendarService.editCalendar(this.editingCalendar._id, {calendarName: this.calendarForm.value.calendarName}).subscribe({
-        next: () => {
-          if (this.editingUser && this.editingUser._id && this.editingUser.name) {
-            this.getUserCalendars(this.editingUser as User);
-          }
-        },
-        error: (err: any) => console.error('Error editing calendar:', err),
-      })
-    }else{
-      // creating new calendar
-      const calendarData: Partial<Calendar> = {
-        ...this.calendarForm.value,
-        owner: this.editingUser?._id,
-      }
+    
+    // Obtén los valores directamente del form
+    const formValues = this.calendarForm.value;
+    console.log('Datos enviados al servidor:', JSON.stringify(formValues, null, 2));
+    console.log('Enviando appointments:', formValues.appointments);
+    
+    const calendarData: Partial<Calendar> = {
+      calendarName: formValues.calendarName,
+      appointments: formValues.appointments || [],
+      invitees: formValues.invitees || [],
+      owner: this.editingUser?._id,
+    };
+    console.log('Datos enviados al servidor:', JSON.stringify(calendarData, null, 2));
+    if (this.editingCalendar) {
+      this.calendarService.editCalendar(this.editingCalendar._id, calendarData).subscribe({
+        next: () => this.reloadUserCalendars(),
+        error: (err) => console.error('Error al editar calendario:', err)
+      });
+    } else {
       this.calendarService.createCalendar(calendarData).subscribe({
-        next: () => {
-          if (this.editingUser && this.editingUser._id && this.editingUser.name) {
-            this.getUserCalendars(this.editingUser as User);
-          }
-        },
-        error: (err: any) => console.error('Error creating calendar:', err),
+        next: () => this.reloadUserCalendars(),
+        error: (err) => console.error('Error al crear calendario:', err)
       });
     }
-
-
-    this.calendarForm.patchValue({
-      calendarName: ""
-    });
+    
     this.closeCalendarForm();
   }
+  
+  // Método auxiliar para recargar calendarios
+  private reloadUserCalendars(): void {
+    if (this.editingUser && this.editingUser._id) {
+      this.getUserCalendars(this.editingUser as User);
+    }
+  }
+
 
 
   closeCalendarForm(): void {
@@ -267,15 +272,29 @@ export class DashboardUsersComponent {
     });
   }
 
-  addAppointment(appointment: string): void {
-    const currentAppointments = this.calendarForm.value.appointments;
-    this.calendarForm.patchValue({ appointments: [...currentAppointments, appointment] });
+  addAppointment(): void {
+    const newAppValue = this.calendarForm.get('newAppointment')?.value;
+    if (newAppValue && newAppValue.trim()) {
+      const currentAppointments = this.calendarForm.get('appointments')?.value || [];
+      if (!this.availableAppointments.includes(newAppValue.trim())){
+        this.calendarForm.get('appointments')?.setValue([...currentAppointments, newAppValue.trim()]);
+        this.availableAppointments = [...this.availableAppointments, newAppValue.trim()];
+        this.calendarForm.get('newAppointment')?.setValue('');
+        
+        console.log('Appointments actualizados:', this.calendarForm.get('appointments')?.value);
+      }{
+        
+      }
+    }
   }
 
   removeAppointment(appointment: string): void {
-    this.calendarForm.patchValue({
-      appointments: this.calendarForm.value.appointments.filter((a: string) => a !== appointment),
-    });
+  const currentAppointments = this.calendarForm.get('appointments')?.value || [];
+  const updatedAppointments = currentAppointments.filter((a: string) => a !== appointment);
+  this.calendarForm.get('appointments')?.setValue(updatedAppointments);
+  this.availableAppointments = updatedAppointments;
+  
+  console.log('Appointments después de eliminar:', this.calendarForm.get('appointments')?.value);
   }
 
   addInvitee(invitee: string): void {
@@ -311,6 +330,9 @@ export class DashboardUsersComponent {
       },
       error: (error) => console.error('Error updating user:', error),
     });
+  }
+  extractAppointments(): void {
+    this.availableAppointments = this.userCalendars.flatMap(calendar => calendar.appointments);
   }
 }
 
