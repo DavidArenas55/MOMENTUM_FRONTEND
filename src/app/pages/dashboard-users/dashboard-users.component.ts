@@ -1,4 +1,5 @@
 import { Component, inject  } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../services/auth.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -64,7 +65,7 @@ export class DashboardUsersComponent {
   availableAppointments: string[] = [];
   newAppointment: string = '';
 
-  constructor(private form: FormBuilder, private router: Router, private dialog: MatDialog){
+  constructor(private form: FormBuilder, private router: Router, private dialog: MatDialog, private snackBar: MatSnackBar){
     this.dashboardForm = this.form.group({});
     this.dataSource = new MatTableDataSource();
     this.calendarForm = this.form.group({
@@ -109,12 +110,6 @@ export class DashboardUsersComponent {
     } catch (e) {
       console.error('Error obtaining users', e);
     }
-  }
-
-  openConfirmationDialog(action: string) {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent);
-
-    return dialogRef.afterClosed();
   }
 
   handlePageChange(event: PageEvent) {
@@ -251,7 +246,6 @@ export class DashboardUsersComponent {
   }
 
 
-
   closeCalendarForm(): void {
     this.editingCalendar = null;
     this.isCalendarFormOpen = false;
@@ -261,7 +255,6 @@ export class DashboardUsersComponent {
   }
 
   deleteCalendar(calendarId: string): void {
-
     this.calendarService.deleteCalendar(calendarId).subscribe({
       next: () => {
         if (this.editingUser && this.editingUser._id && this.editingUser.name) {
@@ -318,21 +311,76 @@ export class DashboardUsersComponent {
   }
 
   saveUser() {
-    if (!this.editingUser || !this.editingUser._id) return;
-
-    const updatedData: Partial<User> = JSON.parse(JSON.stringify(this.editingUser));
-    console.log('Updated data:', updatedData);
+    if (!this.editingUser || !this.editingUser._id || !this.originalUser) {
+      return;
+    }
+  
+    // Create object with only changed fields
+    const updatedData: Partial<User> = {};
+  
+    // Compare each editable field
+    if (this.editingUser.name !== this.originalUser.name) {
+      updatedData.name = this.editingUser.name;
+    }
+    if (this.editingUser.age !== this.originalUser.age) {
+      updatedData.age = this.editingUser.age;
+    }
+    if (this.editingUser.mail !== this.originalUser.mail) {
+      updatedData.mail = this.editingUser.mail;
+    }
+    if (this.editingUser.password && this.editingUser.password !== '') {
+      updatedData.password = this.editingUser.password;
+    }
+  
+    // Only proceed if there are actual changes
+    if (Object.keys(updatedData).length === 0) {
+      this.editingUser = null;
+      return;
+    }
+  
+    console.log('Updating fields:', updatedData);
+    
     this.authService.userUpdate(this.editingUser._id, updatedData).subscribe({
       next: (updatedUser) => {
         console.log('User updated:', updatedUser);
-        this.editingUser = null; // Salir del modo edición después de actualizar
+        this.showSuccess('User updated successfully');
+        this.editingUser = null;
         this.getPaginatedUsers();
       },
-      error: (error) => console.error('Error updating user:', error),
+      error: (error) => {
+        console.error('Error updating user:', error);
+          this.showError("Error Updating User");
+          this.editingUser =  JSON.parse(JSON.stringify(this.originalUser));
+      }
     });
   }
+
   extractAppointments(): void {
     this.availableAppointments = this.userCalendars.flatMap(calendar => calendar.appointments);
+  }
+
+  // FINESTRES CONFIRM ERROR
+  private showError(message: string, duration: number = 5000): void {
+    this.snackBar.open(message, 'Close', {
+      duration: duration,
+      panelClass: ['error-snackbar'],
+      horizontalPosition: 'center',
+      verticalPosition: 'top'
+    });
+  }
+  
+  private showSuccess(message: string): void {
+    // Example using MatSnackBar (you'll need to inject MatSnackBar)
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      panelClass: ['success-snackbar']
+    });
+  }
+
+  openConfirmationDialog(action: string) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent);
+
+    return dialogRef.afterClosed();
   }
 }
 

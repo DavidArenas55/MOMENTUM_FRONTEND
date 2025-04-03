@@ -59,3 +59,26 @@
   padding: 5px 10px; 
   border-radius: 4px; 
 }
+
+// Custom snackbar styles
+.error-snackbar {
+  background-color: #f44336; // Red color for errors
+  color: white;
+}
+
+.success-snackbar {
+  background-color: #4caf50; // Green color for success
+  color: white;
+}
+
+// Position adjustments if needed
+.mat-mdc-snack-bar-container {
+  &.error-snackbar {
+    --mdc-snackbar-container-color: #f44336;
+    --mat-mdc-snack-bar-button-color: #fff;
+  }
+  &.success-snackbar {
+    --mdc-snackbar-container-color: #4caf50;
+    --mat-mdc-snack-bar-button-color: #fff;
+  }
+}

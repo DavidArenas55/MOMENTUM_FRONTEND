@@ -61,15 +61,15 @@
   </button>
 </div>
 
-<div class="content-div twocols" *ngIf="originalUser">
+<div class="content-div twocols" *ngIf="editingUser">
   <div class="column">
     <button mat-stroked-button (click)="this.editingUser = null; this.originalUser = null">Go back</button>
     <h2>User info:</h2>
-    <p><span class="userinfo-key">User ID:</span> {{originalUser._id}}</p>
-    <p><span class="userinfo-key">Username:</span> {{originalUser.name}}</p>
-    <p><span class="userinfo-key">Email:</span> {{originalUser.mail}}</p>
-    <p><span class="userinfo-key">Age:</span> {{originalUser.age}}</p>
-    <p><span class="userinfo-key">Deleted:</span> {{originalUser.isDeleted ? 'Yes' : 'No'}}</p>
+    <p><span class="userinfo-key">User ID:</span> {{originalUser?._id}}</p>
+    <p><span class="userinfo-key">Username:</span> {{originalUser?.name}}</p>
+    <p><span class="userinfo-key">Email:</span> {{originalUser?.mail}}</p>
+    <p><span class="userinfo-key">Age:</span> {{originalUser?.age}}</p>
+    <p><span class="userinfo-key">Deleted:</span> {{originalUser?.isDeleted ? 'Yes' : 'No'}}</p>
 
     <!-- Formulario de edición -->
     <div *ngIf="editingUser" class="edit-user-form">
