@@ -11,7 +11,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { CommonModule } from '@angular/common';
 import { User } from '../../models/user.model';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatListOption, MatList, MatListModule  } from '@angular/material/list';
+import { MatListOption, MatList, MatListModule, MatListItemTitle, MatListItemIcon  } from '@angular/material/list';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -33,6 +33,7 @@ import { MatSelectModule } from '@angular/material/select';
     MatDialogModule,
     MatList,
     MatListModule,
+    MatIconButton,
     MatChipsModule,
     MatTableModule,
     MatIcon,
@@ -210,12 +211,12 @@ export class DashboardUsersComponent {
     if (this.calendarForm.invalid) {
       return;
     }
-    
+
     // Obtén los valores directamente del form
     const formValues = this.calendarForm.value;
     console.log('Datos enviados al servidor:', JSON.stringify(formValues, null, 2));
     console.log('Enviando appointments:', formValues.appointments);
-    
+
     const calendarData: Partial<Calendar> = {
       calendarName: formValues.calendarName,
       appointments: formValues.appointments || [],
@@ -234,10 +235,10 @@ export class DashboardUsersComponent {
         error: (err) => console.error('Error al crear calendario:', err)
       });
     }
-    
+
     this.closeCalendarForm();
   }
-  
+
   // Método auxiliar para recargar calendarios
   private reloadUserCalendars(): void {
     if (this.editingUser && this.editingUser._id) {
@@ -250,7 +251,8 @@ export class DashboardUsersComponent {
     this.editingCalendar = null;
     this.isCalendarFormOpen = false;
     this.calendarForm.patchValue({
-      calendarName: ""
+      calendarName: "",
+      invitees: [],
     });
   }
 
@@ -273,21 +275,21 @@ export class DashboardUsersComponent {
         this.calendarForm.get('appointments')?.setValue([...currentAppointments, newAppValue.trim()]);
         this.availableAppointments = [...this.availableAppointments, newAppValue.trim()];
         this.calendarForm.get('newAppointment')?.setValue('');
-        
+
         console.log('Appointments actualizados:', this.calendarForm.get('appointments')?.value);
       }{
-        
+
       }
     }
   }
 
   removeAppointment(appointment: string): void {
-  const currentAppointments = this.calendarForm.get('appointments')?.value || [];
-  const updatedAppointments = currentAppointments.filter((a: string) => a !== appointment);
-  this.calendarForm.get('appointments')?.setValue(updatedAppointments);
-  this.availableAppointments = updatedAppointments;
-  
-  console.log('Appointments después de eliminar:', this.calendarForm.get('appointments')?.value);
+    const currentAppointments = this.calendarForm.get('appointments')?.value || [];
+    const updatedAppointments = currentAppointments.filter((a: string) => a !== appointment);
+    this.calendarForm.get('appointments')?.setValue(updatedAppointments);
+    this.availableAppointments = updatedAppointments;
+
+    console.log('Appointments después de eliminar:', this.calendarForm.get('appointments')?.value);
   }
 
   addInvitee(invitee: string): void {
@@ -314,10 +316,10 @@ export class DashboardUsersComponent {
     if (!this.editingUser || !this.editingUser._id || !this.originalUser) {
       return;
     }
-  
+
     // Create object with only changed fields
     const updatedData: Partial<User> = {};
-  
+
     // Compare each editable field
     if (this.editingUser.name !== this.originalUser.name) {
       updatedData.name = this.editingUser.name;
@@ -331,15 +333,15 @@ export class DashboardUsersComponent {
     if (this.editingUser.password && this.editingUser.password !== '') {
       updatedData.password = this.editingUser.password;
     }
-  
+
     // Only proceed if there are actual changes
     if (Object.keys(updatedData).length === 0) {
       this.editingUser = null;
       return;
     }
-  
+
     console.log('Updating fields:', updatedData);
-    
+
     this.authService.userUpdate(this.editingUser._id, updatedData).subscribe({
       next: (updatedUser) => {
         console.log('User updated:', updatedUser);
@@ -368,7 +370,7 @@ export class DashboardUsersComponent {
       verticalPosition: 'top'
     });
   }
-  
+
   private showSuccess(message: string): void {
     // Example using MatSnackBar (you'll need to inject MatSnackBar)
     this.snackBar.open(message, 'Close', {

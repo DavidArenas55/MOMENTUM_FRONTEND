@@ -61,7 +61,7 @@
   </button>
 </div>
 
-<div class="content-div twocols" *ngIf="editingUser">
+<div class="content-div threecols" *ngIf="editingUser">
   <div class="column">
     <button mat-stroked-button (click)="this.editingUser = null; this.originalUser = null">Go back</button>
     <h2>User info:</h2>
@@ -75,25 +75,25 @@
     <div *ngIf="editingUser" class="edit-user-form">
       <h3>Edit User</h3>
 
-      <div class="form-group">
-        <label>Name:</label>
-        <input type="name" [(ngModel)]="editingUser.name" class="form-control" />
-      </div>
-      <br>
-      <div class="form-group">
-        <label>Age:</label>
-        <input type="age" [(ngModel)]="editingUser.age" class="form-control" />
-      </div>
-      <br>
-      <div class="form-group">
-        <label>Mail:</label>
-        <input type="mail" [(ngModel)]="editingUser.mail" class="form-control" />
-      </div>
-      <br>
-      <div class="form-group">
-        <label>Password:</label>
-        <input type="password" [(ngModel)]="editingUser.password" class="form-control" />
-      </div>
+      <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input matInput type="name" [(ngModel)]="editingUser.name" class="form-control" />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Age</mat-label>
+        <input matInput type="age" [(ngModel)]="editingUser.age" class="form-control" />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Email</mat-label>
+        <input matInput type="mail" [(ngModel)]="editingUser.mail" class="form-control" />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Password</mat-label>
+        <input matInput type="password" [(ngModel)]="editingUser.password" class="form-control" />
+      </mat-form-field>
 
       <div class="edit-buttons">
         <button mat-raised-button color="primary" (click)="saveUser()">Save</button>
@@ -105,10 +105,13 @@
   <div class="column">
     <h2>User calendars:</h2>
     <mat-list>
-      <mat-list-item *ngFor="let calendar of userCalendars" #calendarList>
-        <div class="calendar-item">
-          <span>{{ calendar.calendarName }} ({{ calendar.appointments.length }} appointments)</span>
-          <button mat-icon-button color="accent" (click)="editCalendar(calendar)" style="margin-right: 4px">
+      <mat-list-item
+      *ngFor="let calendar of userCalendars; let i = index"
+      #calendarList>
+        <div class="calendar-item" [class.top-border]="i !== 0">
+          <div>{{ calendar.calendarName }} ({{ calendar.appointments.length }} appointments)</div>
+          <div class="spacer"></div>
+          <button mat-icon-button color="accent" (click)="editCalendar(calendar)">
             <mat-icon>edit</mat-icon>
           </button>
           <button mat-icon-button color="warn" (click)="deleteCalendar(calendar._id)">
@@ -121,34 +124,12 @@
 
   <div class="column">
     <h2>{{ editingCalendar ? 'Edit Calendar' : 'Create Calendar' }}</h2>
-    <form [formGroup]="calendarForm" (ngSubmit)="saveCalendar()">
+    <form [formGroup]="calendarForm" (ngSubmit)="saveCalendar()" class="edit-calendar-form">
 
       <mat-form-field>
         <mat-label>Calendar Name</mat-label>
         <input matInput formControlName="calendarName" />
       </mat-form-field>
-<!--
-      <mat-form-field>
-        <mat-label>Appointments</mat-label>
-        <mat-select formControlName="appointments" multiple>
-          <mat-option *ngFor="let appointment of availableAppointments" [value]="appointment">
-            {{ appointment }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      
-      <mat-form-field>
-        <mat-label>New Appointment</mat-label>
-        <input matInput formControlName ="newAppointment" (keyup.enter)="addAppointment()" placeholder="Type and press Enter">
-      </mat-form-field>
-      
-      <mat-chip-listbox>
-        <mat-chip *ngFor="let appointment of calendarForm.get('appointments')?.value" [removable]="true" (removed)="removeAppointment(appointment)">
-          {{ appointment }}
-          <mat-icon matChipRemove>cancel</mat-icon>
-        </mat-chip>
-      </mat-chip-listbox>
--->
       <mat-form-field>
         <mat-label>Invitees</mat-label>
         <mat-select formControlName="invitees" multiple>
@@ -157,6 +138,7 @@
           </mat-option>
         </mat-select>
       </mat-form-field>
+
       <div class="buttons">
         <button mat-button type="button" (click)="closeCalendarForm()">Cancel</button>
         <button mat-raised-button color="primary" type="submit">Save</button>

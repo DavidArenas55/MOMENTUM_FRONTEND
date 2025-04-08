@@ -17,13 +17,21 @@
   padding: 2rem;
 }
 
-.twocols {
+.threecols {
   display: flex;
+  flex-direction: row;
   gap: 2em;
 }
+@media (max-width: 1000px) {
+  .threecols {
+    flex-direction: column;
+  }
+}
+
 .column {
   flex-basis: 50%;
   box-sizing: border-box;
+  max-width: 600px;
 }
 
 .mat-mdc-row {
@@ -47,6 +55,10 @@
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.edit-user-form mat-form-field {
+  width: 100%;
+}
+
 .edit-buttons {
   display: flex;
   gap: 1rem;
@@ -54,10 +66,10 @@
 }
 
 .restore-button {
-  margin-left: 10px; 
-  font-size: 14px; 
-  padding: 5px 10px; 
-  border-radius: 4px; 
+  margin-left: 10px;
+  font-size: 14px;
+  padding: 5px 10px;
+  border-radius: 4px;
 }
 
 // Custom snackbar styles
@@ -81,4 +93,23 @@
     --mdc-snackbar-container-color: #4caf50;
     --mat-mdc-snack-bar-button-color: #fff;
   }
+}
+
+.calendar-item {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.calendar-item .spacer {
+  flex: 1 0 auto;
+}
+.caldendar-item button {
+  flex: 0 1 auto;
+}
+.calendar-item.top-border {
+  border-top: 1px solid var(--mat-sys-outline);
+}
+
+.edit-calendar-form mat-form-field {
+  width: 100%;
 }
