@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../models/user.model';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -11,9 +12,56 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
+  // LOGIN
   login(credentials: { name_or_mail: string; password: string }): Observable<any> {
-    return this.http.post(AuthService.apiUrl + "users/login", credentials);
+    return this.http.post<{ accessToken: string }>(
+      AuthService.apiUrl + 'users/login',
+      credentials,
+      { withCredentials: true } // Para enviar y recibir la cookie del refresh token
+    ).pipe(
+      tap((res) => {
+        localStorage.setItem('accessToken', res.accessToken);
+      })
+    );
   }
+
+  // LOGOUT
+  logout(): Observable<any> {
+    const accessToken = localStorage.getItem('accessToken');
+    return this.http.post(AuthService.apiUrl + 'users/logout', {}, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      withCredentials: true
+    }).pipe(
+      tap(() => {
+        localStorage.removeItem('accessToken');
+      })
+    );
+  }
+
+  // REFRESH TOKEN
+  refreshToken(): Observable<{ accessToken: string }> {
+    return this.http.post<{ accessToken: string }>(
+      AuthService.apiUrl + 'users/refresh',
+      {},
+      { withCredentials: true }
+    ).pipe(
+      tap((res) => {
+        localStorage.setItem('accessToken', res.accessToken);
+      })
+    );
+  }
+
+  // Verifica si el usuario está autenticado
+  isAuthenticated(): boolean {
+    return !!localStorage.getItem('accessToken');
+  }
+
+  // Obtener token
+  getAccessToken(): string | null {
+    return localStorage.getItem('accessToken');
+  }
+
+  // Usuarios
   getUsers(page: number, limit: number): Observable<any> {
     return this.http.get(AuthService.apiUrl + "users", {
       params: {

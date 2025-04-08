@@ -61,3 +61,7 @@ For more information on using the Angular CLI, including detailed command refere
 =======
 # MOMENTUM_FRONTEND
 >>>>>>> c3e433e281be3fe482a884e58912c1788223ddb5
+
+npm install ngx-toastr
+
+npm install --save-dev @types/ngx-toastr
