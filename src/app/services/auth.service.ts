@@ -15,7 +15,7 @@ export class AuthService {
   // LOGIN
   login(credentials: { name_or_mail: string; password: string }): Observable<any> {
     return this.http.post<{ accessToken: string }>(
-      AuthService.apiUrl + 'users/login',
+      AuthService.apiUrl + 'auth/login',
       credentials,
       { withCredentials: true } // Para enviar y recibir la cookie del refresh token
     ).pipe(
@@ -28,7 +28,7 @@ export class AuthService {
   // LOGOUT
   logout(): Observable<any> {
     const accessToken = localStorage.getItem('accessToken');
-    return this.http.post(AuthService.apiUrl + 'users/logout', {}, {
+    return this.http.post(AuthService.apiUrl + 'auth/logout', {}, {
       headers: { Authorization: `Bearer ${accessToken}` },
       withCredentials: true
     }).pipe(
@@ -41,7 +41,7 @@ export class AuthService {
   // REFRESH TOKEN
   refreshToken(): Observable<{ accessToken: string }> {
     return this.http.post<{ accessToken: string }>(
-      AuthService.apiUrl + 'users/refresh',
+      AuthService.apiUrl + 'auth/refresh',
       {},
       { withCredentials: true }
     ).pipe(

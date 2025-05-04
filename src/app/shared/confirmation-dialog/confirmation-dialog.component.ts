@@ -6,17 +6,17 @@ import { MatDialogModule } from '@angular/material/dialog';
   selector: 'app-confirmation-dialog',
   imports: [MatDialogModule],
   templateUrl: './confirmation-dialog.component.html',
-  styleUrls: ['./confirmation-dialog.component.scss']
+  styleUrls: ['./confirmation-dialog.component.css']
 })
 export class ConfirmationDialogComponent {
 
   constructor(public dialogRef: MatDialogRef<ConfirmationDialogComponent>) {}
 
   onConfirm(): void {
-    this.dialogRef.close(true); 
+    this.dialogRef.close(true);
   }
 
   onCancel(): void {
-    this.dialogRef.close(false); 
+    this.dialogRef.close(false);
   }
 }
