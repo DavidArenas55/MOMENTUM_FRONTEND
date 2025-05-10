@@ -1,21 +1,21 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../models/user.model';
 import { tap } from 'rxjs/operators';
+import { APP_CONFIG, Config } from '../config/config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  public static apiUrl = 'http://localhost:8080/'; // URL de tu backend
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, @Inject(APP_CONFIG) readonly config: Config) {}
 
   // LOGIN
   login(credentials: { name_or_mail: string; password: string }): Observable<any> {
     return this.http.post<{ accessToken: string }>(
-      AuthService.apiUrl + 'auth/login',
+      this.config.apiUrl + '/auth/login',
       credentials,
       { withCredentials: true } // Para enviar y recibir la cookie del refresh token
     ).pipe(
@@ -28,7 +28,7 @@ export class AuthService {
   // LOGOUT
   logout(): Observable<any> {
     const accessToken = localStorage.getItem('accessToken');
-    return this.http.post(AuthService.apiUrl + 'auth/logout', {}, {
+    return this.http.post(this.config.apiUrl + '/auth/logout', {}, {
       headers: { Authorization: `Bearer ${accessToken}` },
       withCredentials: true
     }).pipe(
@@ -41,7 +41,7 @@ export class AuthService {
   // REFRESH TOKEN
   refreshToken(): Observable<{ accessToken: string }> {
     return this.http.post<{ accessToken: string }>(
-      AuthService.apiUrl + 'auth/refresh',
+      this.config.apiUrl + '/auth/refresh',
       {},
       { withCredentials: true }
     ).pipe(
@@ -63,7 +63,7 @@ export class AuthService {
 
   // Usuarios
   getUsers(page: number, limit: number): Observable<any> {
-    return this.http.get(AuthService.apiUrl + "users", {
+    return this.http.get(this.config.apiUrl + "/users", {
       params: {
         getDeleted: true,
         page: page,
@@ -72,24 +72,24 @@ export class AuthService {
     });
   }
   deleteUsers(usersIds: string[]): Observable<any> {
-    return this.http.patch(AuthService.apiUrl +'users/soft', { usersIds }, {
+    return this.http.patch(this.config.apiUrl +'/users/soft', { usersIds }, {
       headers: { 'Content-Type': 'application/json' }
     });
   }
 
   restoreUser(userId: string): Observable<any> {
-    return this.http.patch(AuthService.apiUrl +`users/${userId}/restore`,{}, {
+    return this.http.patch(this.config.apiUrl +`/users/${userId}/restore`,{}, {
       headers: { 'Content-Type': 'application/json' }
     });
   }
 
   userUpdate(userId: string, userData: Partial<{ mail: string; password: string }>): Observable<User> {
-    return this.http.put<User>(AuthService.apiUrl + `users/${userId}`, userData, {
+    return this.http.put<User>(this.config.apiUrl + `/users/${userId}`, userData, {
       headers: { 'Content-Type': 'application/json' }
     });
   }
 
   getUserById(userId: string) {
-    return this.http.get<User>(`http://localhost:8080/api/users/${userId}`);
+    return this.http.get<User>(this.config.apiUrl + `/users/${userId}`);
   }
 }
