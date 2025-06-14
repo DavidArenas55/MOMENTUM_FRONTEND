@@ -5,23 +5,20 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
-import { MatToolbar } from '@angular/material/toolbar';
 import { MatButton, MatFabButton, MatIconButton } from '@angular/material/button';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { CommonModule } from '@angular/common';
 import { User } from '../../models/user.model';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatListOption, MatList, MatListModule, MatListItemTitle, MatListItemIcon  } from '@angular/material/list';
+import { MatList, MatListModule  } from '@angular/material/list';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { CalendarsService } from '../../services/calendars.service';
 import { Calendar } from '../../models/calendar.model';
-import { BrowserModule } from '@angular/platform-browser';
 import { MatInput } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { ConfirmationDialogComponent } from '../../shared/confirmation-dialog/confirmation-dialog.component';
-import { UP_ARROW } from '@angular/cdk/keycodes';
 import { MatSelectModule } from '@angular/material/select';
 
 @Component({
