@@ -1,1 +1,71 @@
-<p>register works!</p>
+<div class="register-container">
+  <mat-card appearance="outlined" class="login-register-card">
+    <mat-card-header>
+      <mat-card-title>Registrar</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="formRegister" (ngSubmit)="onSubmit()">
+        <p>
+          <mat-form-field appearance="outline" style="width: 100%">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="name" type="text" required />
+            @if (formRegister.get('name')?.hasError('required') && formRegister.get('name')?.touched) {
+              <mat-error>El nombre es obligatorio</mat-error>
+            }
+          </mat-form-field>
+        </p>
+        <p>
+          <mat-form-field appearance="outline" style="width: 100%">
+            <mat-label>Edad</mat-label>
+            <input matInput formControlName="age" type="number" required />
+            @if (formRegister.get('age')?.hasError('required') && formRegister.get('age')?.touched) {
+              <mat-error>La edad es obligatoria</mat-error>
+            }
+          </mat-form-field>
+        </p>
+        <p>
+          <mat-form-field appearance="outline" style="width: 100%">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="mail" type="email" required />
+            @if (formRegister.get('mail')?.hasError('required') && formRegister.get('mail')?.touched) {
+              <mat-error>El email es obligatorio</mat-error>
+            } @else if (formRegister.get('mail')?.hasError('email') && formRegister.get('mail')?.touched) {
+              <mat-error>El formato de email no es correcto</mat-error>
+            }
+          </mat-form-field>
+        </p>
+        <p>
+          <mat-form-field appearance="outline" style="width: 100%">
+            <mat-label>Contraseña</mat-label>
+            <input matInput formControlName="password" type="password" required />
+            @if (formRegister.get('password')?.hasError('required') && formRegister.get('password')?.touched) {
+              <mat-error>La contraseña es obligatoria</mat-error>
+            } @else if (formRegister.get('password')?.hasError('minlength') && formRegister.get('password')?.touched) {
+              <mat-error>La contraseña debe tener al menos 8 caracteres</mat-error>
+            }
+          </mat-form-field>
+        </p>
+        <p>
+          <mat-form-field appearance="outline" style="width: 100%">
+            <mat-label>Verifica contraseña</mat-label>
+            <input matInput formControlName="passwordVerification" type="password" required />
+            @if (formRegister.get('passwordVerification')?.hasError('required') && formRegister.get('passwordVerification')?.touched) {
+              <mat-error>Debes verificar la contraseña</mat-error>
+            }
+            @if (formRegister.get('passwordVerification')?.hasError('passwordMismatch') && formRegister.get('passwordVerification')?.touched) {
+              <mat-error>Las contraseñas no coinciden!</mat-error>
+            }
+          </mat-form-field>
+        </p>
+      </form>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button mat-button (click)="onSubmit()" [disabled]="formRegister.invalid">Registrar</button>
+    </mat-card-actions>
+    <!-- Back to login link with icon and Angular Material button -->
+    <p class="login-link">
+      <mat-icon>login</mat-icon> ¿Ya tienes una cuenta? 
+      <a mat-button color="primary" routerLink="/auth/login">Inicia sesión</a>
+    </p>
+  </mat-card>
+</div>

@@ -1,14 +1,15 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { LoginComponent } from './pages/login/login.component';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, LoginComponent],
+  imports: [CommonModule, RouterOutlet, MatIconModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
-  standalone: true
+  styleUrls: ['./app.component.css'],
+  standalone: true,
 })
 export class AppComponent {
-  title = 'MOMENTUM_FRONTEND';
+  title = 'Momentum_BackOffice';
 }

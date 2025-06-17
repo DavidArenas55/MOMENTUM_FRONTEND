@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
@@ -7,6 +7,9 @@ import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle } 
 import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { DialogComponent } from '../../shared/dialog/dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-login',
@@ -26,34 +29,48 @@ import { MatButton } from '@angular/material/button';
     MatFormField,
     MatInput,
     MatLabel,
-    MatError,
-  ],
+    MatIcon,
+    MatError],
 })
 export class LoginComponent {
   loginForm: FormGroup;
-  errorMessage: string = '';
   authService = inject(AuthService);
 
-  constructor(private formBuilder: FormBuilder, private router: Router) {
-    this.loginForm = this.formBuilder.group({
-      name_or_mail: ['', Validators.required],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+
+  constructor(private form: FormBuilder, private router: Router,  private dialog: MatDialog){
+    this.loginForm = this.form.group({
+      name_or_mail: ['', [Validators.required]],
+      password: ['', [Validators.required, Validators.minLength(6)]], 
     });
   }
 
   onSubmit() {
-    console.debug("aa")
     if (this.loginForm.valid) {
       this.authService.login(this.loginForm.value).subscribe({
         next: () => {
           console.log('Usuario autenticado');
-          this.router.navigate(['/dashboard']); // Redirigir después del login
+          this.router.navigate(['/dashboard/users']);
         },
         error: (err: any) => {
           console.error('Error en el inicio de sesión:', err);
-          this.errorMessage = err.error?.error || 'Error en el inicio de sesión';
+          if (err.status === 401) {
+            this.openDialog('Error', 'Contraseña o usuario incorrecto');
+            this.loginForm.reset(); 
+          } else {
+            this.openDialog('Error', 'Hubo un problema con la petición. Por favor, intenta de nuevo más tarde.');
+            this.loginForm.reset(); 
+          }
         },
       });
+    } else {
+      alert("Los campos son obligatorios.");
     }
+  }
+
+  openDialog(title: string, message: string) {
+    const dialogRef = this.dialog.open(DialogComponent, {
+      data: { title, message }
+    });
+    return dialogRef.afterClosed();
   }
 }

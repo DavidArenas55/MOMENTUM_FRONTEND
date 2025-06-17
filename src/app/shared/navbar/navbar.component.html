@@ -1,0 +1,14 @@
+<mat-toolbar color="primary" id="navbar">
+  <button mat-icon-button (click)="router.navigate(['/dashboard/users'])">
+    <mat-icon>person</mat-icon>
+  </button>
+  <button mat-icon-button (click)="router.navigate(['/dashboard/business'])">
+    <mat-icon>store</mat-icon>
+  </button>
+
+  <span class="spacer"></span>
+
+  <button mat-icon-button (click)="logout()">
+    <mat-icon>logout</mat-icon>
+  </button>
+</mat-toolbar>
