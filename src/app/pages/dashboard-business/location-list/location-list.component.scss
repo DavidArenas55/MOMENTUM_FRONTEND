@@ -1,0 +1,24 @@
+@use '@angular/material' as mat;
+
+.column-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 2em;
+}
+@media (max-width: 1000px) {
+  .column-wrapper {
+    flex-direction: column;
+  }
+}
+
+.column {
+  flex: 1 1 50%;
+  box-sizing: border-box;
+  max-width: 1000px;
+}
+
+.deleted-location {
+  background-color: var(--mat-sys-error);
+  color: var(--mat-sys-on-error);
+}
+
